@@ -20,7 +20,14 @@ saveData = obj => {
 
 }
 
-var seed = {'url': 'http://baike.baidu.com/link?url=Sz9U2RahQrX93XC5gE8r5Brr7ehvnK5qgVn5884UGAgvp-jdipKScL5Vceg30oq9ysa56NMvnpIWg9AoWUo9WPEzK1t3SyZuBffhrhbmyFKdqhxvbaTaQrp5am4nYc23oGNAoUWCcn354wCogFlpWq', 'lemmaId': 3940576};
+// var seed = {'url': 'http://baike.baidu.com/link?url=Sz9U2RahQrX93XC5gE8r5Brr7ehvnK5qgVn5884UGAgvp-jdipKScL5Vceg30oq9ysa56NMvnpIWg9AoWUo9WPEzK1t3SyZuBffhrhbmyFKdqhxvbaTaQrp5am4nYc23oGNAoUWCcn354wCogFlpWq', 'lemmaId': 3940576};
+// var seed = {'url': 'http://baike.baidu.com/link?url=UTCqvwc4gak39k2oeV8yvW2zgIrKQe7EIuwopfT-ku7EcT_uy3QGHODhfvPErMK4jnFBdUYZAMdMJXvg1dvrUG9e64cki9WssPh8FaTlRvhl82nBbTdEFsZ3vkqw5Ud9', 'lemmaId': 114923};
+// var seed = {'url': 'http://baike.baidu.com/item/%E8%8B%8D%E4%BA%95%E7%A9%BA/9776304', 'lemmaId': 9776304};
+// var seed = {'url': 'http://baike.baidu.com/item/%E6%AF%9B%E6%B3%BD%E4%B8%9C/113835', 'lemmaId': 113835};
+// var seed = {'url': 'http://baike.baidu.com/item/%E8%B4%9D%E6%8B%89%E5%85%8B%C2%B7%E4%BE%AF%E8%B5%9B%E5%9B%A0%C2%B7%E5%A5%A5%E5%B7%B4%E9%A9%AC/190467', 'lemmaId': 190467};
+var seed = {'url': 'http://baike.baidu.com/item/%E5%A5%A5%E9%A9%AC%E5%B0%94%C2%B7%E7%A9%86%E9%98%BF%E8%BF%88%E5%B0%94%C2%B7%E5%8D%A1%E6%89%8E%E8%8F%B2?fromtitle=%E5%8D%A1%E6%89%8E%E8%8F%B2&fromid=2024205&type=syn', 'lemmaId': 3673442};
+
+
 var start = 0;
 
 
@@ -44,11 +51,11 @@ addBufferPool = function(obj) {
 	var _string = ""; 
 
 	var saveObj = objectFormat(arrayFormat(_key), arrayFormat(_val))
-	console.log(saveObj)
+	console.log(typeof(saveObj));
 	
 	// saveData(saveObj)
-	var _seed = buff.shift()
-	fetchIMG(_seed)
+	// var _seed = buff.shift()
+	// fetchIMG(_seed)
 }
 
 objectFormat = (arr1, arr2) => {
@@ -77,17 +84,13 @@ arrayFormat = arr => {
 					}
 					
 				} else {
-					if ('undefined' == typeof(y.children[0].data)) {
+					// console.log(y.children)
+					try{
+						_queue.push(y.children[0].data.replace(/\n|&nbsp;|\s+/g, ""))
+					} catch(e){
 						continue
-					} else {
-						try{
-							_queue.push(y.children[0].data.replace(/\n|&nbsp;|\s+/g, ""))
-						} catch(e){
-							console.log(y.children[0].data)
-							return
-						}
-						
 					}
+					
 				}
 			}
 			_content.push(queueToArray(_queue))
@@ -164,12 +167,18 @@ function requestSeeds(seeddata) {
 }
 
 function addBuffer(data) {
-	for(x of data) {
-		var _dataArr = x.data
-		for(y of _dataArr) {
-			buff.push(y)
+	try {
+		for(x of data) {
+			var _dataArr = x.data
+			for(y of _dataArr) {
+				buff.push(y)
+			}
 		}
+	} catch(e) {
+		console.log("the error data is =======>", data)
+		console.log(e)
 	}
+	
 	// console.log(buff)
 }
 
