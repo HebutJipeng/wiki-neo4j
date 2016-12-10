@@ -20,13 +20,7 @@ saveData = obj => {
 
 }
 
-// var seed = {'url': 'http://baike.baidu.com/link?url=Sz9U2RahQrX93XC5gE8r5Brr7ehvnK5qgVn5884UGAgvp-jdipKScL5Vceg30oq9ysa56NMvnpIWg9AoWUo9WPEzK1t3SyZuBffhrhbmyFKdqhxvbaTaQrp5am4nYc23oGNAoUWCcn354wCogFlpWq', 'lemmaId': 3940576};
-// var seed = {'url': 'http://baike.baidu.com/link?url=UTCqvwc4gak39k2oeV8yvW2zgIrKQe7EIuwopfT-ku7EcT_uy3QGHODhfvPErMK4jnFBdUYZAMdMJXvg1dvrUG9e64cki9WssPh8FaTlRvhl82nBbTdEFsZ3vkqw5Ud9', 'lemmaId': 114923};
-// var seed = {'url': 'http://baike.baidu.com/item/%E8%8B%8D%E4%BA%95%E7%A9%BA/9776304', 'lemmaId': 9776304};
-// var seed = {'url': 'http://baike.baidu.com/item/%E6%AF%9B%E6%B3%BD%E4%B8%9C/113835', 'lemmaId': 113835};
-// var seed = {'url': 'http://baike.baidu.com/item/%E8%B4%9D%E6%8B%89%E5%85%8B%C2%B7%E4%BE%AF%E8%B5%9B%E5%9B%A0%C2%B7%E5%A5%A5%E5%B7%B4%E9%A9%AC/190467', 'lemmaId': 190467};
 var seed = {'url': 'http://baike.baidu.com/item/%E5%A5%A5%E9%A9%AC%E5%B0%94%C2%B7%E7%A9%86%E9%98%BF%E8%BF%88%E5%B0%94%C2%B7%E5%8D%A1%E6%89%8E%E8%8F%B2?fromtitle=%E5%8D%A1%E6%89%8E%E8%8F%B2&fromid=2024205&type=syn', 'lemmaId': 3673442};
-
 
 var start = 0;
 
@@ -38,24 +32,23 @@ j.setCookie(cookie, seed);
 * 对于设置cookie的网页
 */
 
+
+//设置缓冲池，用来存放第二次取出的链接
 var buff = [];
 
-addBufferPool = function(obj) {
+processData = function(obj) {
 	var $ = cheerio.load(obj);
 	var _key = $(".name").toArray();
 	var _val = $(".value").toArray();
 	
-	// var relation = $(".portraitbox").toArray();
-	// console.log(relation)
-
 	var _string = ""; 
 
 	var saveObj = objectFormat(arrayFormat(_key), arrayFormat(_val))
-	console.log(typeof(saveObj));
+	console.log(saveObj);
 	
-	// saveData(saveObj)
-	// var _seed = buff.shift()
-	// fetchIMG(_seed)
+	saveData(saveObj)
+	var _seed = buff.shift()
+	fetchPage(_seed)
 }
 
 objectFormat = (arr1, arr2) => {
@@ -115,27 +108,7 @@ queueToArray = que => {
 	return  queStr
 }
 
-
-saveURL = function(name, url) {
-	// saveUrls.save(name, {url: url}, (res) => {
-	// 	console.log(res)
-	// 	start++;
-	// 	if (start <1000) {
-	// 		fetchIMG(seed+start, j)
-	// 	}
-	// });	
-	// var $ = cheerio.load(data);
-	
-	// var _seed = buff.shift()
-	// fetchIMG(_seed, j)
-}
-
-fetchIMG = function(seed, j) {
-		requestSeeds(seed.lemmaId)
-		requestContent(seed.url)
-}
-
-
+//请求网页内容
 function requestContent(urldata) {
 	request({
 		url: urldata,
@@ -146,11 +119,13 @@ function requestContent(urldata) {
 	    // jar: j
 	}, function(err, res, body){
 		if (!err && res.statusCode == 200) {
-			addBufferPool(body)
+			processData(body)
 		}
 	})	
 }
 
+
+//生成种子
 function requestSeeds(seeddata) {
 	request({
 		url: 'http://baike.baidu.com/wikiui/api/zhixinmap?lemmaId=' + seeddata,
@@ -166,6 +141,7 @@ function requestSeeds(seeddata) {
 	})
 }
 
+//添加缓冲池
 function addBuffer(data) {
 	try {
 		for(x of data) {
@@ -179,18 +155,13 @@ function addBuffer(data) {
 		console.log(e)
 	}
 	
-	// console.log(buff)
 }
 
+//把请求网页和生成种子分为两个部分
+fetchPage = function(seed, j) {
+		requestSeeds(seed.lemmaId)
+		requestContent(seed.url)
+}
 
-// acquireData = function(data) {
-// 	var $ = cheerio.load(data);
-// 	var content = $("#item-tip img").toArray();
-// 	for(x of content) {
-// 		saveURL(x.attribs.title,x.attribs.src)
-// 	}
-// }
-
-
-fetchIMG(seed)
+fetchPage(seed)
 
