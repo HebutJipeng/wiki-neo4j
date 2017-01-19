@@ -46,7 +46,7 @@ processData = function(obj) {
 	var saveObj = objectFormat(arrayFormat(_key), arrayFormat(_val))
 	console.log(saveObj);
 	
-	saveData(saveObj)
+	//saveData(saveObj)
 	var _seed = buff.shift()
 	fetchPage(_seed)
 }
